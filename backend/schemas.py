@@ -93,3 +93,30 @@ class APIResponse(BaseModel):
     message: str
     data: Optional[Any] = None
     error: Optional[str] = None
+
+
+# 用户管理
+class UserBase(BaseModel):
+    account: str
+    nickname: str
+    phone: Optional[str] = None
+    email: Optional[str] = None
+
+
+class UserCreate(UserBase):
+    pass
+
+
+class UserUpdate(BaseModel):
+    nickname: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+
+
+class UserInDB(UserBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True

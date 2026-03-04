@@ -62,9 +62,21 @@ class RouteWeightDB(Base):
         UniqueConstraint('route_id', 'model_id', name='_route_model_uc'),
     )
 
+class UserDB(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    account = Column(String(64), unique=True, index=True, nullable=False)
+    nickname = Column(String(128), nullable=False)
+    phone = Column(String(20), nullable=True)
+    email = Column(String(255), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
 class RequestLogDB(Base):
     __tablename__ = "request_logs"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     route_id = Column(Integer, ForeignKey("routes.id"))
     model_id = Column(Integer, ForeignKey("models.id"))

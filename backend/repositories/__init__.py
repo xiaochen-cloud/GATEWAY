@@ -21,6 +21,14 @@ from .route_repository import (
     delete_route_weight,
 )
 from .request_log_repository import create_request_log
+from .user_repository import (
+    get_users,
+    get_user,
+    get_user_by_account,
+    create_user,
+    update_user,
+    delete_user,
+)
 
 __all__ = [
     "get_models",
@@ -41,4 +49,10 @@ __all__ = [
     "update_route_weight",
     "delete_route_weight",
     "create_request_log",
+    "get_users",
+    "get_user",
+    "get_user_by_account",
+    "create_user",
+    "update_user",
+    "delete_user",
 ]

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { Settings, Database, Route as RouteIcon, BarChart3, MessageSquare } from 'lucide-react';
+import { Settings, Database, Route as RouteIcon, BarChart3, MessageSquare, Users } from 'lucide-react';
 import Dashboard from './pages/Dashboard';
 import Playground from './pages/Playground';
 import ModelList from './pages/models/ModelList';
 import ModelForm from './pages/models/ModelForm';
 import RouteList from './pages/routes/RouteList';
 import RouteForm from './pages/routes/RouteForm';
+import UserList from './pages/users/UserList';
+import UserForm from './pages/users/UserForm';
 import './App.css';
 
 function App() {
@@ -18,6 +20,7 @@ function App() {
     { name: '对话', href: '/playground', icon: MessageSquare },
     { name: '模型管理', href: '/models', icon: Database },
     { name: '路由管理', href: '/routes', icon: RouteIcon },
+    { name: '用户管理', href: '/users', icon: Users },
     { name: '设置', href: '/settings', icon: Settings },
   ];
 
@@ -83,6 +86,9 @@ function App() {
               <Route path="/routes" element={<RouteList />} />
               <Route path="/routes/new" element={<RouteForm />} />
               <Route path="/routes/edit/:id" element={<RouteForm />} />
+              <Route path="/users" element={<UserList />} />
+              <Route path="/users/new" element={<UserForm />} />
+              <Route path="/users/edit/:id" element={<UserForm />} />
             </Routes>
           </main>
         </div>
