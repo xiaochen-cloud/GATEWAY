@@ -1,0 +1,47 @@
+# 环境与密钥
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+
+# Node
+node_modules/
+frontend/node_modules/
+
+# 本地数据库
+*.db
+*.sqlite
+*.sqlite3
+
+# 构建与产物
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# IDE / 编辑器
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 日志与临时
+*.log
+.cache/
+
+# Windows 保留设备名（避免 git 报错）
+nul
+null
+con
+
+# 可选：本地提示词日志（若不想提交）
+# memory/cursor-prompt-log.md

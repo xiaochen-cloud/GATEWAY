@@ -1,0 +1,49 @@
+---
+description: 项目结构、端口、API 前缀与通用约定
+alwaysApply: true
+---
+
+# 项目结构与通用约定
+
+## 仓库结构
+
+```
+llm-gateway/
+  backend/           # FastAPI 后端
+    main.py          # 入口，挂载 api + routers
+    config.py        # pydantic-settings
+    database.py      # SQLAlchemy engine, get_db, init_db
+    models.py        # ORM 表
+    schemas.py       # Pydantic 模型
+    crud.py          # 兼容层，从 repositories 导出
+    api/             # 管理端 API（/api/v1/models, /api/v1/routes）
+    services/        # 业务层
+    repositories/    # 数据访问层
+    routers/         # OpenAI 兼容等（/v1/chat/completions 等）
+    adapters.py      # 上游模型调用适配
+  frontend/          # React + Vite
+    src/
+      App.jsx
+      main.jsx
+      pages/
+      utils/api.js
+      hooks/
+  memory/            # 提示词与代码行数日志等
+  .cursor/
+    hooks.json
+    rules/
+    hooks/
+```
+
+## 端口与代理
+
+- 后端：8000（uvicorn）
+- 前端开发：3000（Vite）；`/api`、`/v1` 代理到 localhost:8000
+- 管理端 API 前缀：`/api/v1`；OpenAI 兼容：`/v1/*`（如 `/v1/chat/completions`）
+
+## 通用约定
+
+- 新增后端接口：管理 CRUD 放 api/ + services + repositories；OpenAI 兼容或转发放 routers/。
+- 新增前端页面：在 App.jsx 加路由与侧栏项；API 统一走 utils/api.js。
+- 错误信息：后端 HTTPException 使用中文 `detail`；前端 toast 使用中文。
+- 不修改 AGENTS.md 中已约定的构建命令与分层说明，可补充新模块说明。

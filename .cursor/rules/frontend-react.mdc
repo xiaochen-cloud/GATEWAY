@@ -1,0 +1,73 @@
+---
+description: 前端 React/Vite/Tailwind 与 API 调用规范
+globs: frontend/src/**/*.{jsx,js}
+alwaysApply: false
+---
+
+# 前端 React / Vite 规范
+
+## 技术栈
+
+- **框架**: React 18，函数组件 + Hooks
+- **构建**: Vite 5
+- **路由**: React Router 6
+- **请求**: Axios，封装在 `utils/api.js`，baseURL `/api/v1`
+- **样式**: Tailwind CSS
+- **图标**: lucide-react
+- **提示**: react-hot-toast
+- **界面语言**: 中文（按钮、标签、toast、占位符、错误信息）
+
+## 目录与文件
+
+- **pages/**：页面组件，按业务分子目录（如 `models/`, `routes/`）。列表页 XxxList.jsx，表单页 XxxForm.jsx。
+- **utils/api.js**：唯一 Axios 实例，拦截器里 `response.data` 直接返回、错误时从 `error.response?.data?.detail` 取文案并 `Promise.reject(new Error(errorMessage))`。
+- **hooks/**：自定义 Hook（如 usePromptLogger），可放在 `src/hooks/`。
+- 组件文件名单词 PascalCase，导出 `export default ComponentName`。
+
+## 导入顺序
+
+1. React 及 Hooks（useState, useEffect, useParams, useNavigate）
+2. 第三方（react-router-dom, lucide-react, react-hot-toast）
+3. 本地：utils/api、相对路径组件或页面
+
+```jsx
+import React, { useState, useEffect } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Plus, Trash2 } from 'lucide-react';
+import api from '../../utils/api';
+import toast from 'react-hot-toast';
+```
+
+## 组件风格
+
+- 仅使用函数组件，禁止 class 组件。
+- 状态用 useState，副作用用 useEffect；异步请求在 useEffect 或事件处理函数里调用 api，用 try/catch + toast 报错。
+- 事件处理函数以 `handle` 开头（handleSubmit, handleDelete）；列表拉取可命名为 fetchXxx（如 fetchModels）。
+
+## 样式
+
+- 全部使用 Tailwind 类名，禁止内联 style（除非动态值）。
+- 通用样式类：`btn-primary`、`card`、`input-field` 等见 `index.css`；优先用 Tailwind 工具类（如 `px-4 py-2 rounded-lg`）。
+- 深色：使用 `dark:` 前缀，如 `dark:bg-gray-800`、`dark:text-gray-300`。
+
+## API 调用
+
+- 所有请求通过 `import api from '@/utils/api'` 或相对路径到 `utils/api.js`。
+- 使用 `api.get('/models')`、`api.post('/models', body)`、`api.put('/models/:id', body)`、`api.delete('/models/:id')`；路径相对 baseURL，不重复写 `/api/v1`。
+- 错误统一用 `toast.error('操作失败：' + error.message)` 或中文描述；成功用 `toast.success('操作成功')` 等中文文案。
+
+## 表单与路由
+
+- 表单：受控组件，`value={formData.xxx}` + `onChange` 更新 state；提交时 `e.preventDefault()`，校验后调用 api，成功后 `navigate('/xxx')`。
+- 动态路由：用 `useParams()` 取 id，编辑页根据 id 是否存在判断新增/编辑；列表页用 `<Link to="/models/new">`、`<Link to={\`/models/edit/${id}\`}>`。
+
+## 命名
+
+- 组件、页面：PascalCase（ModelList, ModelForm, Dashboard）
+- 函数、变量：camelCase（fetchModels, handleDelete, formData）
+- 常量：UPPER_CASE（仅真正常量时使用）
+
+## 中文与可访问性
+
+- 用户可见文案使用中文：按钮（保存、取消、添加模型）、表单项标签、toast、空状态说明、确认对话框（如「确定要删除吗？」）。
+- 图标按钮用 `title` 或 `aria-label` 提供说明（如 title="删除"）。

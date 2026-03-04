@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      { "command": "node .cursor/hooks/log-prompt.js" }
+    ],
+    "afterAgentResponse": [
+      { "command": "node .cursor/hooks/log-response.js" }
+    ]
+  }
+}

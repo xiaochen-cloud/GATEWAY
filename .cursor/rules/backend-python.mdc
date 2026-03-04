@@ -1,0 +1,71 @@
+---
+description: 后端 Python/FastAPI 分层架构与代码规范
+globs: backend/**/*.py
+alwaysApply: false
+---
+
+# 后端 Python / FastAPI 规范
+
+## 技术栈
+
+- **框架**: FastAPI
+- **ORM**: SQLAlchemy
+- **校验**: Pydantic (schemas)
+- **配置**: pydantic-settings (config.py)
+
+## 分层架构（必须遵守）
+
+- **api/**：API 层，只做路由、参数、调用 service，不写业务逻辑。使用 `Depends(get_db)` 注入 Session，返回 Pydantic 模型或 HTTPException。
+- **services/**：业务逻辑层，调用 repositories，做校验与编排。类用静态方法，返回 Schema（如 ModelInDB）或抛 HTTPException。
+- **repositories/**：数据库访问层，纯 CRUD，接收 Session 与 Schema，返回 ORM 模型或 bool。不抛 HTTP 异常，只返回 None/false 表示未找到或失败。
+- **routers/**：与 api/ 类似，用于 OpenAI 兼容等非 CRUD 路由。
+- **models.py**：SQLAlchemy 表定义；**schemas.py**：Pydantic 请求/响应模型；**crud.py**：仅作兼容层，从 repositories 重新导出。
+
+## 导入顺序
+
+1. 标准库
+2. 第三方（fastapi, sqlalchemy, pydantic）
+3. 项目内：config, database, models, schemas, repositories, services
+
+```python
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from database import get_db
+from schemas import ModelCreate, ModelInDB
+from services.model_service import ModelService
+```
+
+## 命名
+
+- **类**: PascalCase（ModelDB, RouteDB, ModelCreate, ModelInDB）
+- **函数/变量/参数**: snake_case
+- **常量**: UPPER_CASE
+- **私有**: _leading_underscore
+
+## 类型注解
+
+- 所有函数签名必须带类型注解；返回值为 Optional 或 list[X] 等明确类型。
+- Service 层参数：`db: Session`, `model_id: int`, `data: ModelCreate`；返回值：`ModelInDB | None` 或 `List[ModelInDB]`。
+
+## API 层约定
+
+- 路由函数只做：校验路径/查询参数、调用 Service、根据返回值决定返回 200/201 或 raise HTTPException(404/400)。
+- 404 统一用中文 `detail="模型不存在"` 等；400 用 `detail=str(e)` 或业务说明。
+- 使用 `response_model=list[ModelInDB]` 或 `response_model=ModelInDB`，`status_code=201` 用于 POST 创建，`status_code=204` 用于 DELETE。
+
+## Service 层约定
+
+- 业务校验（如重名、空值）在此层完成，不通过时 `raise HTTPException(status_code=400, detail="...")`。
+- 不直接 import 其他 service；可 import 多个 repository 函数。
+- 返回前用 `ModelInDB.model_validate(orm_obj)` 转成 Schema。
+
+## Repository 层约定
+
+- 函数只接收 `db: Session` 与 Pydantic 或简单类型；返回 ORM 实例、List[ORM] 或 bool。
+- 查不到返回 `None` 或 `False`，不抛异常。
+- 模块顶部用三引号注释说明「某某表 - 数据库访问层」。
+
+## 数据库与配置
+
+- 时间字段使用 `TIMESTAMP(timezone=True)`，`server_default=func.now()`，`onupdate=func.now()`。
+- 配置从 `config.settings` 读取；API 前缀等使用 `settings.API_V1_PREFIX`。

@@ -1,0 +1,14 @@
+---
+description: 提示词与代码行数由 Cursor Hooks 自动记录，无需 AI 手动写入
+alwaysApply: true
+---
+
+# 提示词与代码行数记录（由 Cursor Hooks 完成）
+
+本项目的「提示词 + 返回代码行数」记录由 **Cursor Hooks** 自动完成，与前端 `usePromptLogger` 行为一致。
+
+- **配置**：`.cursor/hooks.json`
+- **脚本**：`.cursor/hooks/log-prompt.js`（beforeSubmitPrompt）、`.cursor/hooks/log-response.js`（afterAgentResponse）
+- **日志**：`memory/cursor-prompt-log.md`
+
+无需在回复中手动写入该文件；Hooks 会在用户发送时写入提示词，在助手回复完成后更新代码行数。
