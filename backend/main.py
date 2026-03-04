@@ -13,6 +13,7 @@ from database import get_db, init_db
 from routers.request_router import router as request_router
 from api.model_router import router as model_router
 from api.route_router import router as route_router
+from api.user_router import router as user_router
 
 # Initialize app
 app = FastAPI(
@@ -36,6 +37,7 @@ app.include_router(request_router)
 # 管理端 API：模型与路由 CRUD，统一前缀 /api/v1
 app.include_router(model_router, prefix=settings.API_V1_PREFIX)
 app.include_router(route_router, prefix=settings.API_V1_PREFIX)
+app.include_router(user_router, prefix=settings.API_V1_PREFIX)
 
 # Initialize database on startup
 @app.on_event("startup")
